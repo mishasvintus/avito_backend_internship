@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: avito_user
+      POSTGRES_PASSWORD: avito_password
+      POSTGRES_DB: avito_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+
+  api:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: avito_user
+      DB_PASSWORD: avito_password
+      DB_NAME: avito_db
+      DB_SSLMODE: disable
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
+

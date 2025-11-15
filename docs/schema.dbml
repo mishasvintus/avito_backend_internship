@@ -1,0 +1,32 @@
+// Database schema for PR Reviewer Assignment Service
+// Use dbdiagram.io to visualize this schema
+
+Table teams {
+  team_name varchar(255) [pk]
+}
+
+Table users {
+  user_id varchar(255) [pk]
+  username varchar(255) [not null]
+  team_name varchar(255) [not null, ref: > teams.team_name]
+  is_active boolean [not null, default: true]
+}
+
+Table pull_requests {
+  pull_request_id varchar(255) [pk]
+  pull_request_name varchar(255) [not null]
+  author_id varchar(255) [not null, ref: > users.user_id]
+  status varchar(10) [not null, note: 'OPEN || MERGED']
+  created_at timestamp [not null, default: `now()`]
+  merged_at timestamp [null, note: 'null if not merged yet']
+}
+
+Table pr_reviewers {
+  pr_reviewers_id serial [pk]
+  pull_request_id varchar(255) [not null, ref: > pull_requests.pull_request_id]
+  user_id varchar(255) [not null, ref: > users.user_id]
+  
+  indexes {
+    (pull_request_id, user_id) [unique]
+  }
+}
