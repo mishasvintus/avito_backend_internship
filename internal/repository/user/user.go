@@ -44,6 +44,30 @@ func Get(exec repository.DBTX, userID string) (*domain.User, error) {
 	return &u, nil
 }
 
+// Update updates user's team_name, username, and is_active.
+func Update(exec repository.DBTX, user *domain.User) error {
+	query := `
+		UPDATE users 
+		SET username = $1, team_name = $2, is_active = $3
+		WHERE user_id = $4
+	`
+	result, err := exec.Exec(query, user.Username, user.TeamName, user.IsActive, user.UserID)
+	if err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
 // SetIsActive updates the is_active status and returns the updated user.
 func SetIsActive(exec repository.DBTX, userID string, isActive bool) (*domain.User, error) {
 	query := `

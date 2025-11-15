@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/mishasvintus/avito_backend_internship/internal/domain"
-	"github.com/mishasvintus/avito_backend_internship/internal/repository"
 	"github.com/mishasvintus/avito_backend_internship/internal/repository/team"
 	"github.com/mishasvintus/avito_backend_internship/internal/repository/user"
 )
@@ -28,30 +27,43 @@ func (s *TeamService) CreateTeam(teamName string, members []domain.TeamMember) e
 	}
 	defer tx.Rollback()
 
-	users := make([]domain.User, len(members))
-	for i, member := range members {
-		users[i] = domain.User{
+	// Check if team already exists
+	exists, err := team.Exists(tx, teamName)
+	if err != nil {
+		return fmt.Errorf("failed to check team existence: %w", err)
+	}
+	if exists {
+		return fmt.Errorf("team already exists")
+	}
+
+	// Create team
+	if err := team.Create(tx, teamName); err != nil {
+		return fmt.Errorf("failed to create team: %w", err)
+	}
+
+	// Process each user: create if not exists, update if exists
+	for _, member := range members {
+		u := domain.User{
 			UserID:   member.UserID,
 			Username: member.Username,
 			TeamName: teamName,
 			IsActive: member.IsActive,
 		}
-	}
 
-	if err := team.Create(tx, teamName); err != nil {
-		if repository.IsUniqueViolation(err) {
-			return fmt.Errorf("team already exists")
+		// Check if user exists
+		existingUser, err := user.Get(tx, member.UserID)
+		if err != nil && err != sql.ErrNoRows {
+			return fmt.Errorf("failed to check user existence: %w", err)
 		}
-		return fmt.Errorf("failed to create team: %w", err)
-	}
 
-	// Create users
-	for _, u := range users {
-		if err := user.Create(tx, &u); err != nil {
-			if repository.IsUniqueViolation(err) {
-				return fmt.Errorf("user %s already exists", u.UserID)
+		if existingUser == nil {
+			if err := user.Create(tx, &u); err != nil {
+				return fmt.Errorf("failed to create user: %w", err)
 			}
-			return fmt.Errorf("failed to create user: %w", err)
+		} else {
+			if err := user.Update(tx, &u); err != nil {
+				return fmt.Errorf("failed to update user: %w", err)
+			}
 		}
 	}
 
