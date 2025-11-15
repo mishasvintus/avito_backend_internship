@@ -153,6 +153,16 @@ func DeleteReviewers(exec repository.DBTX, prID string) error {
 	return nil
 }
 
+// DeleteReviewer removes a specific reviewer from a pull request.
+func DeleteReviewer(exec repository.DBTX, prID, userID string) error {
+	query := `DELETE FROM pr_reviewers WHERE pull_request_id = $1 AND user_id = $2`
+	_, err := exec.Exec(query, prID, userID)
+	if err != nil {
+		return fmt.Errorf("failed to delete reviewer: %w", err)
+	}
+	return nil
+}
+
 // Exists checks if a pull request exists.
 func Exists(exec repository.DBTX, prID string) (bool, error) {
 	var exists bool

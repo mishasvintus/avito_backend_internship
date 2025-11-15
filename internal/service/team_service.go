@@ -6,25 +6,28 @@ import (
 
 	"github.com/mishasvintus/avito_backend_internship/internal/domain"
 	"github.com/mishasvintus/avito_backend_internship/internal/repository"
+	"github.com/mishasvintus/avito_backend_internship/internal/repository/team"
+	"github.com/mishasvintus/avito_backend_internship/internal/repository/user"
 )
 
 // TeamService handles team business logic.
 type TeamService struct {
-	teamRepo *repository.TeamRepository
-	userRepo *repository.UserRepository
+	db *sql.DB
 }
 
 // NewTeamService creates a new team service.
-func NewTeamService(teamRepo *repository.TeamRepository, userRepo *repository.UserRepository) *TeamService {
-	return &TeamService{
-		teamRepo: teamRepo,
-		userRepo: userRepo,
-	}
+func NewTeamService(db *sql.DB) *TeamService {
+	return &TeamService{db: db}
 }
 
 // CreateTeam creates a new team with members in a single transaction.
-// Returns error if team or any user_id already exists (relies on database constraints).
 func (s *TeamService) CreateTeam(teamName string, members []domain.TeamMember) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
 	users := make([]domain.User, len(members))
 	for i, member := range members {
 		users[i] = domain.User{
@@ -35,12 +38,25 @@ func (s *TeamService) CreateTeam(teamName string, members []domain.TeamMember) e
 		}
 	}
 
-	err := s.teamRepo.CreateWithMembers(teamName, users)
-	if err != nil {
+	if err := team.Create(tx, teamName); err != nil {
 		if repository.IsUniqueViolation(err) {
-			return fmt.Errorf("team or user already exists")
+			return fmt.Errorf("team already exists")
 		}
 		return fmt.Errorf("failed to create team: %w", err)
+	}
+
+	// Create users
+	for _, u := range users {
+		if err := user.Create(tx, &u); err != nil {
+			if repository.IsUniqueViolation(err) {
+				return fmt.Errorf("user %s already exists", u.UserID)
+			}
+			return fmt.Errorf("failed to create user: %w", err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return nil
@@ -48,12 +64,12 @@ func (s *TeamService) CreateTeam(teamName string, members []domain.TeamMember) e
 
 // GetTeam retrieves a team with all its members.
 func (s *TeamService) GetTeam(teamName string) (*domain.Team, error) {
-	team, err := s.teamRepo.Get(teamName)
+	t, err := team.Get(s.db, teamName)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("team not found")
 		}
 		return nil, fmt.Errorf("failed to get team: %w", err)
 	}
-	return team, nil
+	return t, nil
 }
