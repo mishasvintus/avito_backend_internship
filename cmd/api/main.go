@@ -33,12 +33,14 @@ func main() {
 	teamService := service.NewTeamService(db)
 	userService := service.NewUserService(db)
 	prService := service.NewPRService(db, reviewerAssigner)
+	statsService := service.NewStatsService(db)
 
 	teamHandler := handler.NewTeamHandler(teamService)
 	userHandler := handler.NewUserHandler(userService)
 	prHandler := handler.NewPRHandler(prService)
+	statsHandler := handler.NewStatsHandler(statsService)
 
-	r := router.SetupRoutes(teamHandler, userHandler, prHandler)
+	r := router.SetupRoutes(teamHandler, userHandler, prHandler, statsHandler)
 
 	addr := fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port)
 	srv := &http.Server{

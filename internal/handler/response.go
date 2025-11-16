@@ -85,6 +85,32 @@ type PRShortResponse struct {
 	Status          string `json:"status"`
 }
 
+// StatisticsResponse wraps statistics response.
+type StatisticsResponse struct {
+	Overall struct {
+		TotalPRs         int64 `json:"total_prs"`
+		TotalAssignments int64 `json:"total_assignments"`
+		TotalUsers       int64 `json:"total_users"`
+		TotalTeams       int64 `json:"total_teams"`
+	} `json:"overall"`
+	ReviewerStats []ReviewerStatResponse `json:"reviewer_stats"`
+	AuthorStats   []AuthorStatResponse   `json:"author_stats"`
+}
+
+// ReviewerStatResponse represents reviewer statistics in response.
+type ReviewerStatResponse struct {
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
+	Count    int64  `json:"count"`
+}
+
+// AuthorStatResponse represents author statistics in response.
+type AuthorStatResponse struct {
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
+	Count    int64  `json:"count"`
+}
+
 // Error sends error response.
 func Error(c *gin.Context, code ErrorCode, message string, statusCode int) {
 	c.JSON(statusCode, ErrorResponse{

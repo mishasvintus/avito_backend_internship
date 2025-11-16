@@ -11,6 +11,7 @@ func SetupRoutes(
 	teamHandler *handler.TeamHandler,
 	userHandler *handler.UserHandler,
 	prHandler *handler.PRHandler,
+	statsHandler *handler.StatsHandler,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -26,6 +27,9 @@ func SetupRoutes(
 	r.POST("/pullRequest/create", prHandler.CreatePR)
 	r.POST("/pullRequest/merge", prHandler.MergePR)
 	r.POST("/pullRequest/reassign", prHandler.ReassignPR)
+
+	// Statistics endpoint
+	r.GET("/stats", statsHandler.GetStatistics)
 
 	return r
 }
