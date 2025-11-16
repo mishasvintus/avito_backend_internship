@@ -1,23 +1,14 @@
 with-expecter: true
+outpkg: mocks
+dir: "tests/mocks"
+disable-version-string: true
+resolve-type-alias: false
+issue-845-fix: true
 packages:
   github.com/mishasvintus/avito_backend_internship/internal/handler:
     interfaces:
       TeamServiceInterface:
-        config:
-          dir: "tests/mocks"
-          filename: "mock_team_service.go"
-          mockname: "MockTeamServiceInterface"
-          packagename: "mocks"
       UserServiceInterface:
-        config:
-          dir: "tests/mocks"
-          filename: "mock_user_service.go"
-          mockname: "MockUserServiceInterface"
-          packagename: "mocks"
       PRServiceInterface:
-        config:
-          dir: "tests/mocks"
-          filename: "mock_pr_service.go"
-          mockname: "MockPRServiceInterface"
-          packagename: "mocks"
+      StatsServiceInterface:
 
