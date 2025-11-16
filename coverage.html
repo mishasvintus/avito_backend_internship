@@ -71,23 +71,23 @@
 				
 				<option value="file7">github.com/mishasvintus/avito_backend_internship/internal/repository/errors.go (27.3%)</option>
 				
-				<option value="file8">github.com/mishasvintus/avito_backend_internship/internal/repository/pr/open_with_reviewers.go (78.6%)</option>
+				<option value="file8">github.com/mishasvintus/avito_backend_internship/internal/repository/pr/open_with_reviewers.go (80.0%)</option>
 				
-				<option value="file9">github.com/mishasvintus/avito_backend_internship/internal/repository/pr/pr.go (69.3%)</option>
+				<option value="file9">github.com/mishasvintus/avito_backend_internship/internal/repository/pr/pr.go (70.0%)</option>
 				
-				<option value="file10">github.com/mishasvintus/avito_backend_internship/internal/repository/stats/stats.go (79.4%)</option>
+				<option value="file10">github.com/mishasvintus/avito_backend_internship/internal/repository/stats/stats.go (80.6%)</option>
 				
-				<option value="file11">github.com/mishasvintus/avito_backend_internship/internal/repository/team/team.go (80.6%)</option>
+				<option value="file11">github.com/mishasvintus/avito_backend_internship/internal/repository/team/team.go (81.1%)</option>
 				
-				<option value="file12">github.com/mishasvintus/avito_backend_internship/internal/repository/user/user.go (70.6%)</option>
+				<option value="file12">github.com/mishasvintus/avito_backend_internship/internal/repository/user/user.go (71.2%)</option>
 				
-				<option value="file13">github.com/mishasvintus/avito_backend_internship/internal/service/pr_service.go (67.3%)</option>
+				<option value="file13">github.com/mishasvintus/avito_backend_internship/internal/service/pr_service.go (68.0%)</option>
 				
 				<option value="file14">github.com/mishasvintus/avito_backend_internship/internal/service/reviewer_assigner.go (87.5%)</option>
 				
 				<option value="file15">github.com/mishasvintus/avito_backend_internship/internal/service/stats_service.go (72.7%)</option>
 				
-				<option value="file16">github.com/mishasvintus/avito_backend_internship/internal/service/team_service.go (71.0%)</option>
+				<option value="file16">github.com/mishasvintus/avito_backend_internship/internal/service/team_service.go (71.8%)</option>
 				
 				<option value="file17">github.com/mishasvintus/avito_backend_internship/internal/service/user_service.go (81.8%)</option>
 				
@@ -863,9 +863,9 @@ func GetOpenPRsWithReviewersFromTeam(exec repository.DBTX, teamName string) ([]P
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to get open PRs with reviewers from team: %w", err)
         }</span>
-        <span class="cov8" title="1">defer rows.Close()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = rows.Close() }</span>()
 
-        var result []PRWithReviewer
+        <span class="cov8" title="1">var result []PRWithReviewer
         for rows.Next() </span><span class="cov8" title="1">{
                 var item PRWithReviewer
                 if err := rows.Scan(&amp;item.PullRequestID, &amp;item.AuthorID, &amp;item.ReviewerID); err != nil </span><span class="cov0" title="0">{
@@ -951,9 +951,9 @@ func Get(exec repository.DBTX, prID string) (*domain.PullRequest, error) <span c
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to get reviewers: %w", err)
         }</span>
-        <span class="cov8" title="1">defer rows.Close()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = rows.Close() }</span>()
 
-        var reviewers []string
+        <span class="cov8" title="1">var reviewers []string
         for rows.Next() </span><span class="cov8" title="1">{
                 var reviewerID string
                 if err := rows.Scan(&amp;reviewerID); err != nil </span><span class="cov0" title="0">{
@@ -983,9 +983,9 @@ func GetByUser(exec repository.DBTX, userID string) ([]domain.PullRequestShort, 
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to get user pull requests: %w", err)
         }</span>
-        <span class="cov8" title="1">defer rows.Close()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = rows.Close() }</span>()
 
-        var prs []domain.PullRequestShort
+        <span class="cov8" title="1">var prs []domain.PullRequestShort
         for rows.Next() </span><span class="cov8" title="1">{
                 var p domain.PullRequestShort
                 if err := rows.Scan(&amp;p.PullRequestID, &amp;p.PullRequestName, &amp;p.AuthorID, &amp;p.Status); err != nil </span><span class="cov0" title="0">{
@@ -1127,9 +1127,9 @@ func GetReviewerStats(exec repository.DBTX) ([]ReviewerStat, error) <span class=
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to get reviewer stats: %w", err)
         }</span>
-        <span class="cov8" title="1">defer rows.Close()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = rows.Close() }</span>()
 
-        var stats []ReviewerStat
+        <span class="cov8" title="1">var stats []ReviewerStat
         for rows.Next() </span><span class="cov8" title="1">{
                 var stat ReviewerStat
                 if err := rows.Scan(&amp;stat.UserID, &amp;stat.Username, &amp;stat.Count); err != nil </span><span class="cov0" title="0">{
@@ -1158,9 +1158,9 @@ func GetAuthorStats(exec repository.DBTX) ([]AuthorStat, error) <span class="cov
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to get author stats: %w", err)
         }</span>
-        <span class="cov8" title="1">defer rows.Close()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = rows.Close() }</span>()
 
-        var stats []AuthorStat
+        <span class="cov8" title="1">var stats []AuthorStat
         for rows.Next() </span><span class="cov8" title="1">{
                 var stat AuthorStat
                 if err := rows.Scan(&amp;stat.UserID, &amp;stat.Username, &amp;stat.Count); err != nil </span><span class="cov0" title="0">{
@@ -1231,9 +1231,9 @@ func Get(exec repository.DBTX, teamName string) (*domain.Team, error) <span clas
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to get team members: %w", err)
         }</span>
-        <span class="cov8" title="1">defer rows.Close()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = rows.Close() }</span>()
 
-        members := make([]domain.TeamMember, 0)
+        <span class="cov8" title="1">members := make([]domain.TeamMember, 0)
         for rows.Next() </span><span class="cov8" title="1">{
                 var member domain.TeamMember
                 if err := rows.Scan(&amp;member.UserID, &amp;member.Username, &amp;member.IsActive); err != nil </span><span class="cov0" title="0">{
@@ -1405,9 +1405,9 @@ func GetActiveTeammates(exec repository.DBTX, userID string) ([]domain.User, err
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to get active teammates: %w", err)
         }</span>
-        <span class="cov8" title="1">defer rows.Close()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = rows.Close() }</span>()
 
-        var teammates []domain.User
+        <span class="cov8" title="1">var teammates []domain.User
         for rows.Next() </span><span class="cov8" title="1">{
                 var u domain.User
                 if err := rows.Scan(&amp;u.UserID, &amp;u.Username, &amp;u.TeamName, &amp;u.IsActive); err != nil </span><span class="cov0" title="0">{
@@ -1474,9 +1474,9 @@ func (s *PRService) CreatePR(prID, prName, authorID string) (*domain.PullRequest
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to begin transaction: %w", err)
         }</span>
-        <span class="cov8" title="1">defer tx.Rollback()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = tx.Rollback() }</span>()
 
-        pullRequest := &amp;domain.PullRequest{
+        <span class="cov8" title="1">pullRequest := &amp;domain.PullRequest{
                 PullRequestID:     prID,
                 PullRequestName:   prName,
                 AuthorID:          authorID,
@@ -1585,9 +1585,9 @@ func (s *PRService) ReassignPR(prID, oldReviewerID string) (*domain.PullRequest,
         if err != nil </span><span class="cov0" title="0">{
                 return nil, "", fmt.Errorf("failed to begin transaction: %w", err)
         }</span>
-        <span class="cov8" title="1">defer tx.Rollback()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = tx.Rollback() }</span>()
 
-        status, err := pr.GetStatus(tx, prID)
+        <span class="cov8" title="1">status, err := pr.GetStatus(tx, prID)
         if err != nil </span><span class="cov0" title="0">{
                 if err == sql.ErrNoRows </span><span class="cov0" title="0">{
                         return nil, "", ErrPRNotFound
@@ -1802,10 +1802,10 @@ func (s *TeamService) CreateTeam(teamName string, members []domain.TeamMember) e
         if err != nil </span><span class="cov0" title="0">{
                 return fmt.Errorf("failed to begin transaction: %w", err)
         }</span>
-        <span class="cov8" title="1">defer tx.Rollback()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = tx.Rollback() }</span>()
 
         // Check if team already exists
-        exists, err := team.Exists(tx, teamName)
+        <span class="cov8" title="1">exists, err := team.Exists(tx, teamName)
         if err != nil </span><span class="cov0" title="0">{
                 return fmt.Errorf("failed to check team existence: %w", err)
         }</span>
@@ -1878,10 +1878,10 @@ func (s *TeamService) DeactivateTeam(teamName string) error <span class="cov8" t
         if err != nil </span><span class="cov0" title="0">{
                 return fmt.Errorf("failed to begin transaction: %w", err)
         }</span>
-        <span class="cov8" title="1">defer tx.Rollback()
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = tx.Rollback() }</span>()
 
         // 1. Deactivate all team users
-        if err := team.DeactivateAll(tx, teamName); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := team.DeactivateAll(tx, teamName); err != nil </span><span class="cov0" title="0">{
                 return fmt.Errorf("failed to deactivate team: %w", err)
         }</span>
 
