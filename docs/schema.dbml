@@ -10,6 +10,11 @@ Table users {
   username varchar(255) [not null]
   team_name varchar(255) [not null, ref: > teams.team_name]
   is_active boolean [not null, default: true]
+  
+  indexes {
+    team_name [name: 'idx_users_team_name']
+    (team_name, is_active) [name: 'idx_users_team_name_is_active']
+  }
 }
 
 Table pull_requests {
@@ -19,6 +24,10 @@ Table pull_requests {
   status varchar(10) [not null, note: 'OPEN || MERGED']
   created_at timestamp [not null, default: `now()`]
   merged_at timestamp [null, note: 'null if not merged yet']
+  
+  indexes {
+    created_at [name: 'idx_pull_requests_created_at']
+  }
 }
 
 Table pr_reviewers {
@@ -28,5 +37,7 @@ Table pr_reviewers {
   
   indexes {
     (pull_request_id, user_id) [unique]
+    pull_request_id [name: 'idx_pr_reviewers_pull_request_id']
+    user_id [name: 'idx_pr_reviewers_user_id']
   }
 }
