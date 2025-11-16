@@ -28,7 +28,7 @@ func (h *UserHandler) SetIsActive(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.SetIsActive(req.UserID, req.IsActive)
+	user, err := h.userService.SetIsActive(req.UserID, *req.IsActive)
 	if err != nil {
 		if errors.Is(err, service.ErrUserNotFound) {
 			NotFound(c, "user not found")

@@ -9,8 +9,10 @@ import (
 
 // IsUniqueViolation checks if the error is a PostgreSQL unique constraint violation.
 // PostgreSQL error code 23505 = unique_violation.
+// Works with wrapped errors using errors.As.
 func IsUniqueViolation(err error) bool {
-	if pqErr, ok := err.(*pq.Error); ok {
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) {
 		return pqErr.Code == "23505"
 	}
 	return false
@@ -18,8 +20,10 @@ func IsUniqueViolation(err error) bool {
 
 // IsForeignKeyViolation checks if the error is a PostgreSQL foreign key violation.
 // PostgreSQL error code 23503 = foreign_key_violation.
+// Works with wrapped errors using errors.As.
 func IsForeignKeyViolation(err error) bool {
-	if pqErr, ok := err.(*pq.Error); ok {
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) {
 		return pqErr.Code == "23503"
 	}
 	return false

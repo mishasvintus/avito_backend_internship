@@ -8,8 +8,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
+      - /var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U avito_user -d avito_db"]
       interval: 2s
@@ -33,6 +33,4 @@ services:
     ports:
       - "8080:8080"
 
-volumes:
-  postgres_data:
 
